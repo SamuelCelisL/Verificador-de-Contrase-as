@@ -99,15 +99,26 @@ function estimateCrackTime(password) {
 
   // Convertir a formato legible (segundos, minutos, horas, años)
   if (crackTimeSeconds < 60) {
-    return `${Math.round(crackTimeSeconds)} segundos`;
+    return { time: `${Math.round(crackTimeSeconds)} segundos`, seconds: crackTimeSeconds };
   } else if (crackTimeSeconds < 3600) {
-    return `${Math.round(crackTimeSeconds / 60)} minutos`;
+    return { time: `${Math.round(crackTimeSeconds / 60)} minutos`, seconds: crackTimeSeconds };
   } else if (crackTimeSeconds < 86400) {
-    return `${Math.round(crackTimeSeconds / 3600)} horas`;
+    return { time: `${Math.round(crackTimeSeconds / 3600)} horas`, seconds: crackTimeSeconds };
   } else if (crackTimeSeconds < 31536000) {
-    return `${Math.round(crackTimeSeconds / 86400)} días`;
+    return { time: `${Math.round(crackTimeSeconds / 86400)} días`, seconds: crackTimeSeconds };
   } else {
-    return `${Math.round(crackTimeSeconds / 31536000)} años`;
+    return { time: `${Math.round(crackTimeSeconds / 31536000)} años`, seconds: crackTimeSeconds };
+  }
+}
+
+// Función para determinar el nivel de solidez
+function getPasswordStrength(seconds) {
+  if (seconds < 3600) {
+    return "Solidez Suave";
+  } else if (seconds < 31536000) {
+    return "Solidez Intermedia";
+  } else {
+    return "Solidez Fuerte";
   }
 }
 
@@ -134,22 +145,23 @@ checkButton.addEventListener("click", () => {
     return;
   }
 
-  const crackTime = estimateCrackTime(password);
+  const { time, seconds } = estimateCrackTime(password);
   const recommendations = getPasswordRecommendations(password);
+  const strength = getPasswordStrength(seconds);
 
   if (isSecurePassword(password)) {
     if (containsDictionaryWord(password)) {
       message.style.color = "#f1c40f";
-      message.innerHTML = `✔️ Tu contraseña es segura, pero detectamos que contiene palabras comunes.<br>🕒 Tiempo estimado para descifrarla: <b>${crackTime}</b><br><br>🔍 <b>Recomendaciones:</b><ul>${recommendations
+      message.innerHTML = `✔️ Tu contraseña es segura, pero detectamos que contiene palabras comunes.<br>🕒 Tiempo estimado para descifrarla: <b>${time}</b><br>🔒 Nivel de contraseña: <b>${strength}</b><br><br>🔍 <b>Recomendaciones:</b><ul>${recommendations
         .map((rec) => `<li>${rec}</li>`)
         .join("")}</ul>`;
     } else {
       message.style.color = "#16a085";
-      message.innerHTML = `✔️ Tu contraseña es segura.<br>🕒 Tiempo estimado para descifrarla: <b>${crackTime}</b>`;
+      message.innerHTML = `✔️ Tu contraseña es segura.<br>🕒 Tiempo estimado para descifrarla: <b>${time}</b><br>🔒 Nivel de contraseña: <b>${strength}</b>`;
     }
   } else {
     message.style.color = "#e74c3c";
-    message.innerHTML = `❌ Tu contraseña no es segura.<br>🕒 Tiempo estimado para descifrarla: <b>${crackTime}</b><br><br>🔍 <b>Recomendaciones:</b><ul>${recommendations
+    message.innerHTML = `❌ Tu contraseña no es segura.<br>🕒 Tiempo estimado para descifrarla: <b>${time}</b><br>🔒 Nivel de contraseña: <b>${strength}</b><br><br>🔍 <b>Recomendaciones:</b><ul>${recommendations
       .map((rec) => `<li>${rec}</li>`)
       .join("")}</ul>`;
   }

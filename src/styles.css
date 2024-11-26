@@ -85,3 +85,18 @@ body {
   #togglePassword:hover {
     color: #1abc9c;
   }
+  #passwordGenerated {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  #copyGeneratedPassword {
+    background-color: #2ecc71;
+  }
+  
+  #copyGeneratedPassword:hover {
+    background-color: #27ae60;
+  }
